@@ -13,8 +13,9 @@ public class Client {
              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             out.println(word);
-            String resp = in.readLine();
-            System.out.println(resp);
+            in.lines().forEach(System.out::println);
+//            String resp = in.readLine();
+//            System.out.println(resp);
         } catch (IOException e) {
             e.printStackTrace();
         }

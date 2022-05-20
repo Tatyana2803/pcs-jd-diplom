@@ -9,9 +9,8 @@ import java.util.*;
 
 public class BooleanSearchEngine implements SearchEngine {
 
-    private List<PageEntry> entryList = new ArrayList<>();
-    private Map<String, PageEntry> mapForAllPages = new TreeMap<>();
-    private List<Map<String, PageEntry>> mapList = new ArrayList<>();
+    private final Map<String, List<PageEntry>> mapForAllPages = new TreeMap<>();
+    //  private  List<PageEntry> list = new ArrayList<>();
 
     public BooleanSearchEngine(File pdfsDir) throws IOException {
 
@@ -31,12 +30,15 @@ public class BooleanSearchEngine implements SearchEngine {
                         }
                         wordsToSearch.put(word.toLowerCase(), wordsToSearch.getOrDefault(word, 0) + 1);
                     }
+
                     for (Map.Entry<String, Integer> entry : wordsToSearch.entrySet()) {
-                        mapForAllPages.put(entry.getKey(), new PageEntry(doc.getDocumentInfo().getTitle(), page, entry.getValue()));
+                        List<PageEntry> list = new ArrayList<>();
+                        if (mapForAllPages.containsKey(entry.getKey())) {
+                            list = mapForAllPages.get(entry.getKey());
+                        }
+                        list.add(new PageEntry(doc.getDocumentInfo().getTitle(), page, entry.getValue()));
+                        mapForAllPages.put(entry.getKey(), list);
                     }
-                    mapList.add(mapForAllPages);
-                    mapForAllPages = new TreeMap<>();
-                    wordsToSearch.clear();
                 }
             }
         }
@@ -44,14 +46,9 @@ public class BooleanSearchEngine implements SearchEngine {
 
     @Override
     public List<PageEntry> search(String word) {
-        for (Map<String, PageEntry> entryMap : mapList) {
-            for (Map.Entry<String, PageEntry> entry : entryMap.entrySet()) {
-                if (word.equals(entry.getKey())) {
-                    entryList.add(entry.getValue());
-                }
-            }
+        if (mapForAllPages.containsKey(word.toLowerCase())) {
+            return mapForAllPages.get(word.toLowerCase());
         }
-        Collections.sort(entryList);
-        return entryList;
+        return Collections.emptyList();
     }
 }

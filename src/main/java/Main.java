@@ -15,18 +15,18 @@ public class Main {
         //System.out.println(engine.search("бизнес"));
 
         ServerSocket serverSocket = new ServerSocket(8989);
-        while (true) {
+       while (true) {
             try (Socket clientSocket = serverSocket.accept();
                  PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                  BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
                 String word = in.readLine();
 
-                List<PageEntry> list = engine.search(word.toLowerCase(Locale.ROOT));
+                List<PageEntry> list = engine.search(word);
                 String jsonStr = new GsonBuilder().setPrettyPrinting().create().toJson(list);
                 out.println(jsonStr);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
+   }
 }
